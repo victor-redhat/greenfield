@@ -1,0 +1,29 @@
+---
+- name: "VM from a Template - Vmware"
+  hosts: "localhost"
+  gather_facts: no
+  connection: local
+  tasks:
+    - name: Provisioning VM from template
+      local_action:
+        module: vmware_guest
+        cluster: Cluster01
+        datacenter: Greenfield
+        hostname: vcentgftemp.tchile.local
+        username: administrator@vsphere.local
+        password: Zaq.089.
+        validate_certs: no
+        template: template_vm
+        name: ansible-test
+        state: poweredon
+        hardware:
+          memory_mb: 2048
+          num_cpus: 2
+        networks:
+          - name: VLAN339
+            ip: 10.186.243.132
+            netmask: 255.255.254.0
+        customization:
+          hostname: ansible-test
+          domain: pai.tchile.local
+          autologon: yes

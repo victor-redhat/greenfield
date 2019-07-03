@@ -1,0 +1,42 @@
+---
+- name: "VM Conf"
+  hosts: ansible-test-group
+  tasks:
+    - name: Create an insecure file
+      file:
+        path: /tmp/direct-file
+        state: touch
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Change to a FQDN
+      hostname:
+        name: "{{ ansible.hostname }}.pai.tchile.local"
+
+    - name: Download bootstrap.py
+      get_url:
+       url: "http://prd7664.pai.tchile.local/pub/bootstrap.py"
+       dest: /usr/local/sbin/bootstrap.py
+       mode: 0755
+       owner: root
+       group: root
+      retries: 10
+      delay: 1
+      ignore_errors: yes
+
+    - name: Satellite Register with boostrap
+      command: >
+       /usr/local/sbin/bootstrap.py
+         --login         admin
+         --password      IUS20hoI
+         --server        prd7664.pai.tchile.local
+         --organization  TCHILE
+         --location      PAI
+         --activationkey rhel7-act-key
+         --hostgroup     RHEL7/PAI
+         --unmanaged
+         --force
+         --skip-puppet
+
+...

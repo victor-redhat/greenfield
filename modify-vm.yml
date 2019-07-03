@@ -1,0 +1,63 @@
+---
+- name: "VM PostConf - Vmware"
+  hosts: "localhost"
+  gather_facts: no
+  connection: local
+  tasks:
+    - name: Create script file
+      local_action:
+       module: vmware_vm_shell
+       cluster: Cluster01
+       datacenter: Greenfield
+       hostname: vcentgftemp.tchile.local
+       username: administrator@vsphere.local
+       password: Zaq.089.
+       validate_certs: no
+       vm_id: ansible-test
+       vm_username: root
+       vm_password: welcome1
+       vm_shell: /bin/cat
+       vm_shell_args: "<<EOF > /tmp/ansible-test-file \n
+                       #!/bin/bash \n
+                       touch /tmp/file-created-from-script"
+       vm_shell_cwd: "/"
+       vm_shell_env:
+         - "PATH=/bin:/usr/bin:/sbin:/usr/sbin"
+
+    - name: Change to a exec file
+      local_action:
+       module: vmware_vm_shell
+       cluster: Cluster01
+       datacenter: Greenfield
+       hostname: vcentgftemp.tchile.local
+       username: administrator@vsphere.local
+       password: Zaq.089.
+       validate_certs: no
+       vm_id: ansible-test
+       vm_username: root
+       vm_password: welcome1
+       vm_shell: /bin/chmod
+       vm_shell_args: "+x /tmp/ansible-test-file"
+       vm_shell_cwd: "/"
+       vm_shell_env:
+         - "PATH=/bin:/usr/bin:/sbin:/usr/sbin"
+
+    - name: Run script
+      local_action:
+       module: vmware_vm_shell
+       cluster: Cluster01
+       datacenter: Greenfield
+       hostname: vcentgftemp.tchile.local
+       username: administrator@vsphere.local
+       password: Zaq.089.
+       validate_certs: no
+       vm_id: ansible-test
+       vm_username: root
+       vm_password: welcome1
+       vm_shell: /bin/bash
+       vm_shell_args: "./ansible-test-file"
+       vm_shell_cwd: "/tmp"
+       vm_shell_env:
+         - "PATH=/bin:/usr/bin:/sbin:/usr/sbin"
+
+...
